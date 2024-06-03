@@ -1,0 +1,42 @@
+services:
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - '9411:9411'
+    networks:
+      - observability-network
+
+  cep-api:
+    container_name: app-cep-api
+    build:
+      context: ./cep-input
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./cep-api:/app
+    depends_on:
+      - zipkin
+      - weather-api
+    command: go run cmd/main.go cmd/wire_gen.go
+    networks:
+      - observability-network
+
+  weather-api:
+    container_name: app-weather-api
+    build:
+      context: ./weather-api
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8080'
+    volumes:
+      - ./weather-api:/app
+    depends_on:
+      - zipkin
+    command: go run cmd/main.go cmd/wire_gen.go
+    networks:
+      - observability-network
+
+networks:
+  observability-network:
+    driver: bridge
