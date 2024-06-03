@@ -11,36 +11,23 @@ import (
 	"net/url"
 )
 
+const apiKey = "e1fece5bce574041a9f130048241703"
+
 func GetWeather(location string, ctx context.Context) (*model.WeatherResponse, error) {
-	cityEncoded := url.QueryEscape(location)
-	return getWeather(cityEncoded, ctx)
-}
-
-func NewTemperatureResponse(tempC float64) model.TemperatureResponse {
-	return model.TemperatureResponse{
-		TempC: tempC,
-		TempF: celsiusToFahrenheit(tempC),
-		TempK: celsiusToKelvin(tempC),
-	}
-}
-
-func celsiusToFahrenheit(c float64) float64 {
-	return c*1.8 + 32
-}
-
-func celsiusToKelvin(c float64) float64 {
-	return c + 273.15
-}
-
-func getWeather(location string, ctx context.Context) (*model.WeatherResponse, error) {
 	_, span := otel.Tracer("service-b").Start(ctx, "get-weather")
 	defer span.End()
 
-	apiKey := "e1fece5bce574041a9f130048241703"
-	formattedUrl := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s", apiKey, location)
-
-	resp, err := http.Get(formattedUrl)
+	reqStr := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", apiKey, url.QueryEscape(location))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqStr, nil)
 	if err != nil {
+		log.Printf("failed to create request to WeatherAPI: %v", err.Error())
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		log.Printf("failed to make request to WeatherAPI: %v", err.Error())
 		return nil, err
 	}
 	defer resp.Body.Close()

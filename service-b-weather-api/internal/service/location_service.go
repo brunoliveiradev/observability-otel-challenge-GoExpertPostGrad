@@ -40,5 +40,6 @@ func GetAddressFromViaCEP(cep string, ctx context.Context) (*model.AddressRespon
 		return nil, fmt.Errorf("can not find zipcode")
 	}
 
+	log.Printf("Fetched address: %+v", address)
 	return &address, nil
 }
