@@ -6,34 +6,28 @@ services:
     networks:
       - observability-network
 
-  cep-api:
-    container_name: app-cep-api
+  goapp-service-a:
+    container_name: goapp-a-cep-input
     build:
-      context: ./cep-input
+      context: ./service-a-cep-input
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
-    volumes:
-      - ./cep-api:/app
     depends_on:
       - zipkin
-      - weather-api
-    command: go run cmd/main.go cmd/wire_gen.go
+      - goapp-service-b
     networks:
       - observability-network
 
-  weather-api:
-    container_name: app-weather-api
+  goapp-service-b:
+    container_name: goapp-b-weather-api
     build:
-      context: ./weather-api
+      context: ./service-b-weather-api
       dockerfile: Dockerfile
     ports:
-      - '8081:8080'
-    volumes:
-      - ./weather-api:/app
+      - '8081:8081'
     depends_on:
       - zipkin
-    command: go run cmd/main.go cmd/wire_gen.go
     networks:
       - observability-network
 
