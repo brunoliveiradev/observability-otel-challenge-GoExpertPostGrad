@@ -1,4 +1,4 @@
-### 200 valid CEP
+### 200 valid CEP (POST)
 # curl --location 'http://localhost:8080'
 #--header 'Content-Type: application/json'
 #--data '{
@@ -11,19 +11,31 @@ Content-Type: application/json
   "cep": "29902555"
 }
 
-###
-
-### 422 invalid CEP
+### 422 invalid CEP (POST)
 # curl --location 'http://localhost:8080'
 #--header 'Content-Type: application/json'
 #--data '{
-#  "cep": "99999999"
+#  "cep": "123456"
 #}'
 POST http://localhost:8080
 Content-Type: application/json
 
 {
-  "cep": "99999999"
+  "cep": "123456"
 }
 
-###
+
+### 404 not found CEP (GET)
+# curl --location 'http://localhost:8081/99999999'
+GET http://localhost:8081/99999999
+
+
+#### 200 valid CEP (GET)
+# curl --location 'http://localhost:8081/01001000'
+GET http://localhost:8081/01001000
+
+
+### 422 invalid CEP (GET)
+
+# curl --location 'http://localhost:8081/123456'
+GET http://localhost:8081/123456
