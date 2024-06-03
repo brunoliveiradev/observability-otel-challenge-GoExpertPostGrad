@@ -14,8 +14,7 @@ func GetAddressFromViaCEP(cep string, ctx context.Context) (*model.AddressRespon
 	_, span := otel.Tracer("service-b").Start(ctx, "get-cep-location")
 	defer span.End()
 
-	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep)
-	resp, err := http.Get(url)
+	resp, err := http.Get(fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep))
 	if err != nil {
 		return nil, err
 	}
