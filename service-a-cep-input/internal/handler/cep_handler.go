@@ -1,0 +1,64 @@
+package handler
+
+import (
+	"encoding/json"
+	"github.com/GoExpertPostGrad/observability-otel-challenge-GoExpertPostGrad/service-a-cep-input/internal/service"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"io"
+	"net/http"
+	"strconv"
+)
+
+type Cep struct {
+	Cep string `json:"cep"`
+}
+
+func HandleCepRequest(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "invalid zipcode", http.StatusUnprocessableEntity)
+		return
+	}
+
+	var cep Cep
+	err = json.Unmarshal(body, &cep)
+	if err != nil {
+		http.Error(w, "invalid zipcode", http.StatusUnprocessableEntity)
+		return
+	}
+
+	ctx, span := otel.Tracer("service-a").Start(r.Context(), "validate-cep")
+	span.SetAttributes(attribute.String("cep", cep.Cep))
+	defer span.End()
+
+	if !isValidZipcode(cep.Cep) {
+		http.Error(w, "invalid zipcode", http.StatusUnprocessableEntity)
+		return
+	}
+
+	temperature, status, err := service.GetTemperature(cep.Cep, ctx)
+	if err != nil {
+		http.Error(w, "invalid zipcode", status)
+		return
+	}
+
+	jsonData, err := json.Marshal(temperature)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.Write([]byte(jsonData))
+}
+
+func isValidZipcode(zipcode string) bool {
+	if len(zipcode) != 8 {
+		return false
+	}
+	for _, char := range zipcode {
+		if _, err := strconv.Atoi(string(char)); err != nil {
+			return false
+		}
+	}
+	return true
+}
