@@ -48,7 +48,8 @@ func HandleCepRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	w.Write([]byte(jsonData))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }
 
 func isValidZipcode(zipcode string) bool {
