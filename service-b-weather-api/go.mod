@@ -3,7 +3,6 @@ module github.com/GoExpertPostGrad/observability-otel-challenge-GoExpertPostGrad
 go 1.22
 
 require (
-	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/chi/v5 v5.0.12
 	go.opentelemetry.io/otel v1.27.0
 	go.opentelemetry.io/otel/exporters/zipkin v1.27.0

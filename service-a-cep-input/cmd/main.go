@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/GoExpertPostGrad/observability-otel-challenge-GoExpertPostGrad/service-a-cep-input/internal/handler"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
