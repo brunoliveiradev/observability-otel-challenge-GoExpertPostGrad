@@ -43,5 +43,4 @@ coverage.out
 #*.modverify
 
 # Docker folder
-.docker
 .gcloudignore
