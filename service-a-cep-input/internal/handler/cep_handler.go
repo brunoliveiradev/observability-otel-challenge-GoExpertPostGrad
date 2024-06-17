@@ -39,7 +39,7 @@ func HandleCepRequest(w http.ResponseWriter, r *http.Request) {
 
 	temperature, status, err := service.GetTemperature(cep.Cep, ctx)
 	if err != nil {
-		http.Error(w, "invalid zipcode", status)
+		http.Error(w, err.Error(), status)
 		return
 	}
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"go.opentelemetry.io/otel"
 	"io"
 	"net/http"
@@ -25,14 +26,18 @@ func GetTemperature(cep string, ctx context.Context) (*TemperatureResponse, int,
 	}
 
 	resp, err := http.DefaultClient.Do(req)
-
 	if err != nil {
 		return nil, http.StatusUnprocessableEntity, err
 	}
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, http.StatusUnprocessableEntity, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, resp.StatusCode, errors.New(string(body))
 	}
 
 	var temperatureResponse TemperatureResponse
