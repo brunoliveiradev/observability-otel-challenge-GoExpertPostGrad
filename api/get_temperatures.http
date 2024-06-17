@@ -24,6 +24,18 @@ Content-Type: application/json
   "cep": "123456"
 }
 
+### 404 not found CEP (POST)
+# curl --location 'http://localhost:8080'
+#--header 'Content-Type: application/json'
+#--data '{
+#  "cep": "01153001"
+#}'
+POST http://localhost:8080
+Content-Type: application/json
+
+{
+  "cep": "01153001"
+}
 
 ### 404 not found CEP (GET)
 # curl --location 'http://localhost:8081/99999999'
